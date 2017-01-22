@@ -3,114 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <title>My Angular App</title>
+  <link href="https://fonts.googleapis.com/css?family=Bowlby+One+SC" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Scope+One" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/main.css">
   
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script src="assets/js/script.js" type="text/javascript"></script>
+  <script src="assets/lib/dropdown.js" type="text/javascript"></script>
   
 </head>
-<body>
+<body ng-app="movieApp" ng-controller="MovieController">
   
   
-  <div class="wrapper" ng-app="movieApp" ng-controller="MovieController">
-    <nav>
-      <a class="navbar-brand" href="#"><b>Fastr</b> <span class="span-style">Movie Browser</span></a>
-    </nav>
-    <div class="wrapper__inner">
-     
-      <div class="search-box">
-        <input type="text" ng-model="search" ng-model-options="{ debounce: 800 }" onclick="select()" class="search-box__input" placeholder="Enter full movie name" autofocus />
-        <span class="search-box__btn"><i class="glyphicon glyphicon-search"></i></span>
-      </div>
-
-     
-     
-     
-     
-     
-     
-     
-     
-     
+  
+  <header class="header">
+    <h1><a href="index.html">Movie Raviews</a></h1>
+    
+    <div class="search-box">
+      <input type="text" ng-model="search" ng-model-options="{ debounce: 800 }" onclick="select()" class="search-box__input" placeholder="Enter full movie name" autofocus />
+    </div>
+  </header>
+  
+  <main class="main">
      
       <div class="details">
-       
-        <div class="details__loading" ng-if="!details">
-          Loading results...
-        </div>
-
-        <div ng-if="details.Response==='True'">
-          <img ng-src="{{ details.Poster=='N/A' ? 'http://placehold.it/150x220&text=N/A' : details.Poster }}" class="thumbnail animated flip movie-poster">
-
-          <span class="span-outer">
-            <a href="http://imdb.com/title/{{ details.imdbID }}" target="_blank">{{ details.Title }}</a>
-          </span>, {{ details.Year }}
-
-          <p><strong>Released on:</strong> {{ details.Released }} ({{ details.Runtime }})</p>
-
-          <p>{{ details.Plot }}</p>
-
-          <p class="outer-p">
-            <div class="inner-p">
-              <span class="label label-primary">Directors :</span> {{ details.Director }}
+        <div class="details__inner" ng-if="details.Response==='True'">
+          
+          <div class="details__image">
+            <img ng-src="{{ details.Poster=='N/A' ? 'http://placehold.it/150x220&text=N/A' : details.Poster }}">
+            <a href="#" class="details--btn" id="review-btn">Review Movie +</a>
+          </div>
+          
+          <div class="details__info-wrap">
+           
+            <div class="details__title">
+              <div>{{ details.Title }}</div>
+              <div>{{ details.Year }}</div>
             </div>
-            <div class="inner-p">
-              <span class="label label-primary">Actors :</span> {{ details.Actors }}
-            </div>
-            <div class="inner-p">
-              <span class="label label-primary">Genre :</span> {{ details.Genre }}
-            </div>
-          </p>
 
-          <p class="outer-p-2">Ratings:
-            <br>
-            <strong>IMDb Rating</strong>: <span class="label label-success">{{ details.imdbRating }}</span>
-            <br>
-            <strong>Rotten Tomatoes</strong>: <span class="label label-success">{{ details.tomatoRating }}</span>
-          </p>
+            <ul class="details__info">
+              <li><strong>{{ details.Released }} ({{ details.Runtime }})</strong></li>
+              <li>{{ details.Plot }}</li>
+              <li><strong>{{ details.Director }}</strong></li>
+              <li><strong>{{ details.Actors }}</strong></li>
+            </ul>
 
-          <p class="outer-p-3">
-            <a ng-href="https://www.youtube.com/results?search_query={{ details.Title }}" target="_blank" class="btn btn-default btn-xs btn-info">Watch Trailers!</a>
-            <span class="divider"></span>
-            <a ng-href="http://subscene.com/subtitles/title?q={{ details.Title }}" target="_blank" class="btn btn-default btn-xs btn-info">Get Subtitles!</a>
-            <span class="divider"></span>
-            <a ng-href="http://www.theost.com/search/custom/?key={{ details.Title }}" target="_blank" class="btn btn-default btn-xs btn-info">Hear Soundtracks!</a>
-            <span class="divider"></span>
-            <a ng-href="http://www.amazon.in/s/ref=nb_sb_noss_1?url=search-alias%3Ddvd&field-keywords={{ details.Title }}" target="_blank" class="btn btn-default btn-xs btn-info">Buy this movie!</a>
-          </p>
-        </div>
-
-        <div ng-if="details.Response==='False'">
+            <p class="outer-p-2">Ratings:
+              <br>
+              <strong>IMDb Rating</strong>: <span class="label label-success">{{ details.imdbRating }}</span>
+            </p>
+            
+          </div><!-- .details__info-wrap -->
+          
+        </div><!-- .details__inner -->
+        <div class="details__results" ng-if="details.Response==='False'">
           No results found.
         </div>
+      </div><!-- .details -->
+      
+      
+      
+      <div class="reviewer">
+        <p class="reviewer__title">You've selected to review <strong>{{ details.Title }}</strong>, one of our classics!</p>
+        <div class="reviewer__inner">
+         
+          <form class="reviewer__item" ng-submit="todoAdd()">
+            <textarea rows="4" cols="50" type="text" class="reviewer__item--field" ng-model="todoInput" placeholder="Write Your Review">
+            </textarea>
+            <input type="submit" class="reviewer__item--btn" value="Leave Review">
+          </form>
+
+          <div class="reviewer__item">
+            <div class="reviewer__item-repeat" ng-repeat="x in todoList">
+                <input type="checkbox" class="reviewer__item--checkbox" ng-model="x.done"> 
+                <span class="reviewer__item--result" ng-bind="x.todoText"></span>
+            </div>
+
+            <button class="reviewer__item--btn-red" ng-click="remove()">Remove Review</button>
+          </div>
         
-      </div>
+        </div><!-- .reviewer__inner -->
+      </div><!-- .reviewer -->
+      
+  </main><!-- .wrapper -->
+  
 
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-     
-      <div class="related-results">
-        <div class="related-results__inner" ng-if="related.Response!=='False'">
-          Related Results:
+  
+  
+  
+  
 
-          <ul class="related-results__list">
-            <li class="related-results__item" ng-repeat="movie in related.Search">
-              <a href="#" id="{{ $index + 1 }}" ng-click="update(movie)">{{ movie.Title }}</a>, {{ movie.Year }}
-            </li>
-          </ul>
-        </div>
-      </div><!-- .related-results -->
- 
-    </div><!-- .wrapper__inner -->
-  </div><!-- .wrapper -->
+  
+
+  <footer class="related-results" ng-if="related.Response!=='False'">
+      <h2><span>Related Results</span></h2>
+      <ul class="related-results__list">
+        <li class="related-results__item" style="background-image: url('{{ movie.Poster=='N/A' ? 'http://placehold.it/150x220&text=N/A' : movie.Poster }}');" ng-repeat="movie in related.Search">
+          <a href="#" class="related-results__item-title" id="{{ $index + 1 }}" ng-click="update(movie)">{{ movie.Title }}</a>
+        </li>
+      </ul>
+  </footer><!-- .related-results -->
   
   
 </body>
