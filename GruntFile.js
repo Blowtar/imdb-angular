@@ -1,65 +1,52 @@
-module.exports = function (grunt)
-{
-	grunt.initConfig({
-		pkg: grunt.file.readJSON('package.json'),
-		concat: {
-			options: {
-				separator: "\n\n"
-			},
-			dist: {
-				src: ['src/resources/js/binding.js'],
-				dest: 'src/resources/js/<%= pkg.name %>.js'
-			},
-			deps: {
-				src: [
-					'bower_components/modernizr/modernizr.js',
-					'bower_components/jquery/dist/jquery.min.js',
-					'bower_components/bootstrap/dist/js/bootstrap.min.js',
-					'bower_components/angularjs/angular.min.js',
-				],
-				dest: 'src/resources/js/<%= pkg.name %>-deps.js'
-			},
-			css: {
-				src: ['bower_components/bootstrap/dist/css/bootstrap.min.css',
-						'src/resources/css/styles.css'
-				],
-				dest: 'src/resources/css/<%= pkg.name %>.css'
-			}
-		},
+module.exports = function(grunt) {
+  
+  grunt.initConfig({
 
-		sass: {
-			dev: {
-				files: {
-					'src/resources/css/styles.css': 'src/resources/css/styles.scss'
-				}
-			}
-		},
+  sass: {
+      dist: {
+        options: {
+            sourcemap: true
+        },
+        files: {
+            'assets/css/main.css': 'sass/main.scss'
+        }
+      }
+  },
+  cssmin: {
+     dist: {
+        options: {
+           banner: '/*! My Project | Lee Easeman */'
+        },
+        files: {
+           'assets/css/main.min.css': ['assets/css/main.css']
+        }
+    }
+  },
+  uglify: {
+     dist: {
+        options: {
+           sourcemap: true,
+           banner: '/*! My Project 1.0.0 | Lee Easeman */'
+        },
+        files: {
+           'assets/js/script.min.js': ['assets/js/script.js'],
+        }
+     }
+  },
+  watch: {
+    css: {
+      files: 'sass/*.scss',
+      tasks: ['sass']
+    }
+  }
 
-		watch: {
-			scripts: {
-				files: ['src/resources/js/**/*.js'],
-				tasks: ['concat:dist']
-			},
-			styles: {
-				files: ['src/resources/css/*.scss'],
-				tasks: ['sass']
-			}
-		}
-	});
+  });
+  
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
-	//npm tasks
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-sass');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-ngdocs');
-
-	//tasks
-	grunt.registerTask('default', 'Default Task Alias', ['build']);
-
-	grunt.registerTask('build', 'Build the application', 
-		['sass:dev',
-		'concat'
-		]);
-}
+  grunt.registerTask('default', ['sass','cssmin','uglify', 'watch']);
+  
+};
